@@ -1,0 +1,23 @@
+<?php
+
+$NAMESPACE$
+
+use $APPNAME$$CLASS_REPOSITORY$\$CLASS$Repository;
+use $APPNAME$Services\Contracts\ServiceInterface;
+use Sak\Core\Services\BaseService;
+
+/**
+ * Class $CLASS$Service
+ * @package $NAMESPACE$
+ */
+class $CLASS$Service extends BaseService implements ServiceInterface
+{
+    /**
+     * $CLASS$Service constructor.
+     * @param $CLASS$Repository $$PLURAL$Repository
+     */
+    public function __construct($CLASS$Repository $$PLURAL$Repository)
+    {
+        $this->repository = $$PLURAL$Repository;
+    }
+}

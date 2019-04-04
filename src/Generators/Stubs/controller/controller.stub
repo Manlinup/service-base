@@ -1,0 +1,107 @@
+<?php
+
+$NAMESPACE$
+
+use $BASE_CONTROLLER$;
+use $APPNAME$Http\Requests\$CONTROLLER_CLASS$\Create$CLASS$Request;
+use $APPNAME$Http\Requests\$CONTROLLER_CLASS$\Update$CLASS$Request;
+use $APPNAME$$CLASS_SERVICE$\$CLASS$Service;
+use Dingo\Api\Http\Request;
+
+/**
+ * Class $CONTROLLER_CLASS$Controller
+ * @package $NAMESPACE$
+ */
+class $CONTROLLER_CLASS$Controller extends BaseController
+{
+
+    /**
+     * @var $CLASS$Service
+     */
+    protected $service;
+
+    /**
+     * $CONTROLLER_CLASS$Controller constructor.
+     * @param $CLASS$Service $service
+     */
+    public function __construct($CLASS$Service $service)
+    {
+        $this->service = $service;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $$PLURAL$ = $this->service->all();
+
+        return $this->response->paginator($$PLURAL$);
+    }
+
+    /**
+     * @param $id
+     * @return \Dingo\Api\Http\Response
+     */
+    public function show($id)
+    {
+        $$PLURAL$ = $this->service->show($id);
+
+        return $this->response->item($$PLURAL$);
+    }
+
+    /**
+     * @param Create$CLASS$Request $request
+     * @return \Dingo\Api\Http\Response
+     * @throws \Exception
+     */
+    public function store(Create$CLASS$Request $request)
+    {
+        $$PLURAL$ = $this->service->store($request->json()->all());
+
+        return $this->response->item($$PLURAL$);
+    }
+
+    /**
+     * @param Update$CLASS$Request $request
+     * @param $id
+     * @return \Dingo\Api\Http\Response
+     */
+    public function update(Update$CLASS$Request $request, $id)
+    {
+        $$PLURAL$ = $this->service->update($request->json()->all(), $id);
+
+        return $this->response->item($$PLURAL$);
+    }
+
+    /**
+     * @param $id
+     * @return \Dingo\Api\Http\Response
+     */
+    public function destroy($id)
+    {
+        $this->service->destroy($id);
+
+        return $this->response->noContent();
+    }
+
+    /**
+     * @param Request $request
+     * @return \Dingo\Api\Http\Response
+     */
+    public function destroyAll(Request $request)
+    {
+        $this->service->destroyAll($request);
+
+        return $this->response->noContent();
+    }
+
+    public function count()
+    {
+        $count = $this->service->count();
+
+        return $this->response->array(compact('count'));
+    }
+}

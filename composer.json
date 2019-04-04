@@ -1,0 +1,45 @@
+{
+    "name": "sak/service-base",
+    "description": "php service base",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "shixiaobin",
+            "email": "shixiaobin@ycimedia.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.0.0",
+        "dingo/api": "^2.0",
+        "prettus/l5-repository": "^2.6",
+        "darkaonline/l5-swagger": "5.5.*",
+        "zircote/swagger-php": "2.*",
+        "mews/purifier": "2.0.0",
+        "ramsey/uuid": "3.6.1",
+        "firebase/php-jwt": "^5.0",
+        "guzzlehttp/guzzle": "^6.2",
+        "barryvdh/laravel-cors": "^0.11.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sak\\Core\\": "/src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sak\\Core\\Tests\\": "tests/"
+        }
+    },
+    "prefer-stable": true,
+    "config": {
+        "secure-http": false
+    }
+}

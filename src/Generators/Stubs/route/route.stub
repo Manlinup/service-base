@@ -1,0 +1,14 @@
+
+$api->version('$VERSION$', function ($api) {
+    $api->group([
+        'namespace' => '$APPNAME$$CONTROLLER_NAMESPACE$\$CONTROLLER$',
+    ], function ($api) {
+        $api->get('$ROUTE$', '$CONTROLLER$Controller@index')->name('$ROUTE$_get_index');
+        $api->get('$ROUTE$/count', '$CONTROLLER$Controller@count')->name('$ROUTE$_get_index|$ROUTE$_get_count');
+        $api->get('$ROUTE$/{id}', '$CONTROLLER$Controller@show')->where('id', '[0-9]+')->name('$ROUTE$_get_show');
+        $api->post('$ROUTE$', '$CONTROLLER$Controller@store')->name('$ROUTE$_post_store');
+        $api->put('$ROUTE$/{id}', '$CONTROLLER$Controller@update')->where('id', '[0-9]+')->name('$ROUTE$_put_update');
+        $api->delete('$ROUTE$/{id}', '$CONTROLLER$Controller@destroy')->where('id', '[0-9]+')->name('$ROUTE$_delete_destroy');
+        $api->delete('$ROUTE$/batch', '$CONTROLLER$Controller@destroyAll')->name('$ROUTE$_delete_destroy|$ROUTE$_delete_destroyBath');
+    });
+});
