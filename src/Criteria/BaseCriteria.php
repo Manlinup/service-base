@@ -10,6 +10,10 @@ namespace Sak\Core\Criteria;
 use Prettus\Repository\Contracts\RepositoryInterface;
 use Prettus\Repository\Contracts\CriteriaInterface;
 
+/**
+ * Class BaseCriteria
+ * @package Sak\Core\Criteria
+ */
 abstract class BaseCriteria implements CriteriaInterface
 {
     public function apply($model, RepositoryInterface $repository)

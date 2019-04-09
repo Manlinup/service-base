@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Created by PhpStorm.
+ * User: xiaobin.shi
+ * Date: 19/2/20
+ * Time: 下午1:43
+ */
 namespace Sak\Core\Repositories;
 
 use Closure;
@@ -7,20 +12,17 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Container\Container as Application;
+use Sak\Core\Criteria\BaseCriteria;
+use Sak\Core\Criteria\SearchCriteria;
+use Sak\Core\Events\UpdateRepositoryCache;
+use Sak\Core\Traits\CacheableRepository;
 use Prettus\Repository\Contracts\CacheableInterface;
 use Prettus\Repository\Eloquent\BaseRepository as OriginBaseRepository;
-use Sak\Core\Events\UpdateRepositoryCache;
-use Sak\Core\Criteria\SearchCriteria;
 use Illuminate\Support\Collection;
 use Prettus\Repository\Contracts\CriteriaInterface;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
-use Sak\Core\Traits\CacheableRepository;
 
-/**
- * Class BaseRepository
- * @package Sak\Core\Repositories
- */
 abstract class BaseRepository extends OriginBaseRepository implements CacheableInterface
 {
     use CacheableRepository;
@@ -32,6 +34,10 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
     protected $virtualFields = [];
 
     protected $searchBlacklist = [];
+
+    private $querySearchCriteria;
+
+    protected $querySearchFields = [];
 
     /**
      * BaseRepository constructor.
@@ -51,6 +57,7 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
     {
         parent::boot();
         $this->pushDefaultCriteria();
+
         //这里检验缓存机制
     }
 
@@ -73,6 +80,22 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
         return $this->virtualFields;
     }
 
+    protected function setQuerySearchCriteria(CriteriaInterface $criteria)
+    {
+        if (!$this->querySearchCriteria) {
+            $this->querySearchCriteria = $criteria;
+        }
+    }
+
+    public function getQuerySearchCriteria()
+    {
+        return $this->querySearchCriteria;
+    }
+
+    public function getQuerySearchFields()
+    {
+        return $this->querySearchFields;
+    }
 
     public function beginTransaction()
     {
@@ -96,25 +119,26 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
 
     /**
      * 覆写了base方法后，cache无效，因为是通过trait来覆写all方法实现cache的
+     *
      * @param array $columns
      * @return mixed
-     * @throws \Illuminate\Container\EntryNotFoundException
+     * @throws \Prettus\Repository\Exceptions\RepositoryException
      */
     public function all($columns = ['*'])
     {
+        return $this->originalAll($columns);
         if (!$this->allowedCache('all') || $this->isSkippedCache()) {
             return $this->originalAll($columns);
         }
-        $params = array_merge(func_get_args(), ['tenant_id' => config('tenant_id')]);
-        $key = $this->getCacheKey('all', $params);
+        $params  = func_get_args();
+        $key     = $this->getCacheKey('all', $params);
         $minutes = $this->getCacheMinutes();
-        $value = $this->getCacheRepository()->remember($key, $minutes, function () use ($columns) {
+        $value   = $this->getCacheRepository()->remember($key, $minutes, function () use ($columns) {
             return $this->originalAll($columns);
         });
 
         return $value;
     }
-
 
     /**
      * 这里是为了兼容缓存方法单独提取出来
@@ -127,14 +151,16 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
         if ($this->searchable()) {
             $this->pushCriteria(app(SearchCriteria::class));
         }
+        if ($this->querySearchFields) {
+            $this->pushCriteria($this->querySearchCriteria);
+        }
         $this->applyCriteria();
         $this->applyScope();
         if ($this->model instanceof Builder) {
             $query = $this->model->getQuery();
-            if (property_exists($query, 'limit') && isset($query->limit) &&
-                property_exists($query, 'offset') && isset($query->offset)
-            ) {
-                $page = $query->offset / $query->limit + 1;
+            if (property_exists($query, 'limit') && isset($query->limit) && property_exists($query, 'offset') && isset($query->offset)) {
+                //$page = $query->offset / $query->limit + 1;
+                $page    = (int)$query->offset + 1;
                 $results = $this->model->paginate($query->limit, ['*'], 'rows', $page);
             } else {
                 $results = $this->model->get($columns);
@@ -142,6 +168,7 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
         } else {
             $results = $this->model->all($columns);
         }
+
         $this->resetModel();
         $this->resetScope();
 
@@ -167,17 +194,17 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
     }
 
     /**
+     * 根据id查找单条数据
      * @param $id
      * @param array $columns
      * @return mixed
-     * @throws \Illuminate\Container\EntryNotFoundException
      */
     public function find($id, $columns = ['*'])
     {
         if (!$this->allowedCache('find') || $this->isSkippedCache()) {
             return $this->originalFind($id, $columns);
         }
-        $params = array_merge(func_get_args(), ['tenant_id' => config('tenant_id')]);
+        $params = func_get_args();
         $key = $this->getCacheKey('find', $params);
         $minutes = $this->getCacheMinutes();
         $value = $this->getCacheRepository()->remember($key, $minutes, function () use ($id, $columns) {
@@ -192,7 +219,6 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
      * @param $id
      * @param array $columns
      * @return mixed
-     * @throws \Prettus\Repository\Exceptions\RepositoryException
      */
     public function originalFind($id, $columns = ['*'])
     {
@@ -491,7 +517,7 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
         if (!$this->allowedCache('paginate') || $this->isSkippedCache()) {
             return $this->originalPaginate($limit, $columns);
         }
-        $params = array_merge(func_get_args(), ['tenant_id' => config('tenant_id')]);
+        $params = func_get_args();
         $key = $this->getCacheKey('paginate', $params);
 
         $minutes = $this->getCacheMinutes();
@@ -519,7 +545,7 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
         }
         $this->applyCriteria();
         $this->applyScope();
-        $limit = is_null($limit) ? config('inno.pagination.limit', 15) : $limit;
+        $limit = is_null($limit) ? config('sms.pagination.limit', 20) : $limit;
         $results = $this->model->{$method}($limit, $columns);
         $results->appends(app('request')->query());
         $this->resetModel();
@@ -574,15 +600,15 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
      * 获取支持高级检索的model
      * @return Model
      */
-    public function getSearchModel()
-    {
-        $this->pushCriteria(app(SearchCriteria::class));
-        $this->applyCriteria();
-        $this->applyScope();
-        $result = $this->model;
-        $this->resetModel();
-        $this->resetScope();
-
-        return $result;
-    }
+//    public function getSearchModel()
+//    {
+//        $this->pushCriteria(app(SearchCriteria::class));
+//        $this->applyCriteria();
+//        $this->applyScope();
+//        $result = $this->model;
+//        $this->resetModel();
+//        $this->resetScope();
+//
+//        return $result;
+//    }
 }

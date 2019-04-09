@@ -14,7 +14,7 @@ class SwaggerController extends Controller
      *
      * @SWG\Swagger(
      *   @SWG\Info(
-     *     title="SMS API",
+     *     title="Swagger API",
      *     version="1.0.0"
      *   )
      * )
@@ -24,8 +24,7 @@ class SwaggerController extends Controller
         if (config('app.env') == 'production') {
             return response()->json([], 200);
         }
-
-        $swagger = \Swagger\scan(app_path('/App/Http/Controllers/'));
+        $swagger = \Swagger\scan(app_path('Http/Controllers/'));
 
         return response()->json($swagger, 200);
     }

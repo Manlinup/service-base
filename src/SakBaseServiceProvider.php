@@ -10,6 +10,7 @@ namespace Sak\Core;
 use Dingo\Api\Provider\LaravelServiceProvider;
 use Sak\Core\Commands\ApiGeneratorCommand;
 use Sak\Core\Commands\RollbackGeneratorCommand;
+use Sak\Core\Commands\SakLaravooleCommand;
 use Sak\Core\Log\ConfigureLogging;
 use Sak\Core\Exceptions\Handler;
 use Sak\Core\Middleware\HtmlPurifierMiddleware;
@@ -74,7 +75,7 @@ class SakBaseServiceProvider extends LaravelServiceProvider
     public function boot()
     {
         $this->setMiddleware();
-        parent::boot();
+        //parent::boot();
         $this->setPublishes();
         $this->bindListeners();
         $this->customValidator();
@@ -87,6 +88,7 @@ class SakBaseServiceProvider extends LaravelServiceProvider
         $this->setProviders();
         $this->commands(ApiGeneratorCommand::class);
         $this->commands(RollbackGeneratorCommand::class);
+        //$this->commands(SakLaravooleCommand::class);
     }
 
 
@@ -156,18 +158,23 @@ class SakBaseServiceProvider extends LaravelServiceProvider
      */
     protected function setPublishes()
     {
-        $configPath = __DIR__ . '/../resources/config/';
+        $configPath  = __DIR__ . '/../resources/config/';
+        $swaggerPath = __DIR__ . '/../resources/views/vendor/l5-swagger/index.blade.php';
+        $routesPath  = __DIR__ . '/../resources/routes/';
 
         //remove dingo api publish
         self::$publishes[static::class] = [];
-
         $this->publishes([
-            $configPath . 'sak.php'  => config_path('sak.php'),
-            $configPath . 'api.php'  => config_path('api.php'),
+            $configPath . 'sak.php'    => config_path('sak.php'),
+            $configPath . 'api.php'    => config_path('api.php'),
+            $routesPath . 'swagger_web.php'    => route_path('swagger_web.php'),
+            $swaggerPath => resource_path('views/vendor/l5-swagger/index.blade.php')
         ]);
 
         $this->mergeConfigFrom($configPath . 'sak.php', 'sak');
         $this->mergeConfigFrom($configPath . 'api.php', 'api');
+        $this->loadRoutesFrom($routesPath . 'swagger_web.php', 'swagger_web');
+        $this->loadViewsFrom($swaggerPath, 'l5-swagger');
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'sak');
     }
 
