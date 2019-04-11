@@ -7,6 +7,7 @@
  */
 namespace Sak\Core;
 
+use Dingo\Api\Provider\DingoServiceProvider;
 use Dingo\Api\Provider\LaravelServiceProvider;
 use Sak\Core\Commands\ApiGeneratorCommand;
 use Sak\Core\Commands\RollbackGeneratorCommand;
@@ -40,6 +41,7 @@ class SakBaseServiceProvider extends LaravelServiceProvider
     protected $providers = [
         EventServiceProvider::class,
         PurifierServiceProvider::class,
+        \Barryvdh\Cors\ServiceProvider::class,
     ];
 
     /**

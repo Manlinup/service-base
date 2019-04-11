@@ -8,7 +8,6 @@
 namespace Sak\Core\Requests;
 
 use Dingo\Api\Http\FormRequest;
-use Illuminate\Support\MessageBag;
 use Sak\Core\Exceptions\AccessDeniedException;
 use Sak\Core\Exceptions\ValidationException;
 use Illuminate\Contracts\Validation\Validator;
@@ -28,12 +27,13 @@ abstract class BaseRequest extends FormRequest
         return true;
     }
 
+
     /**
      * Get all of the input and files for the request.
-     *
+     * @param null $keys
      * @return array
      */
-    public function all()
+    public function all($keys = null)
     {
         return $this->json()->all();
     }
@@ -75,7 +75,7 @@ abstract class BaseRequest extends FormRequest
         }
 
         if ($this->container['request'] instanceof Request) {
-            throw new SakoValidationException($customMsg);
+            throw new ValidationException($customMsg);
         }
 
         parent::failedValidation($validator);

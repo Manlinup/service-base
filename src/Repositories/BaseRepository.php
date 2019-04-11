@@ -126,7 +126,6 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
      */
     public function all($columns = ['*'])
     {
-        return $this->originalAll($columns);
         if (!$this->allowedCache('all') || $this->isSkippedCache()) {
             return $this->originalAll($columns);
         }

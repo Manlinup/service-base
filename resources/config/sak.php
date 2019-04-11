@@ -273,4 +273,6 @@ return [
         'service'     => [
         ]
     ],
+
+    'web_url' => env('WEB_URL', 'http://localhost'),
 ];
