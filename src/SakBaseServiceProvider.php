@@ -41,7 +41,6 @@ class SakBaseServiceProvider extends LaravelServiceProvider
     protected $providers = [
         EventServiceProvider::class,
         PurifierServiceProvider::class,
-        \Barryvdh\Cors\ServiceProvider::class,
     ];
 
     /**
