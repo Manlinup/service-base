@@ -111,7 +111,7 @@ class ConfigureLogging
      */
     protected function getDefaultFormatter()
     {
-        $strFormat = "APP | %datetime% RID_%HTTP_X_REQUEST_ID% TID_%HTTP_X_CONSUMER_TENANT_ID% %channel%.%level_name%: %message% %context% %extra%\n";
+        $strFormat = "APP | %datetime% RID_%HTTP_X_REQUEST_ID% %channel%.%level_name%: %message% %context% %extra%\n";
         return new LineFormatter($strFormat, null, true, true);
     }
 }

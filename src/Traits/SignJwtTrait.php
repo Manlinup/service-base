@@ -16,7 +16,7 @@ trait SignJwtTrait
      */
     public function signGlobal()
     {
-        $privateKey = config('inno.global_jwt.private_key');
+        $privateKey = config('sak.global_jwt.private_key');
         $privateKey = <<<EOD
 -----BEGIN PRIVATE KEY-----
 {$privateKey}
@@ -25,7 +25,7 @@ EOD;
         $time = time();
         $payload = [
             "iat"         => $time,
-            "exp"         => $time + config('inno.global_jwt.exp'),
+            "exp"         => $time + config('sak.global_jwt.exp'),
             "client_type" => 2,
             "iss"         => config('sak.global_jwt.iss')
         ];

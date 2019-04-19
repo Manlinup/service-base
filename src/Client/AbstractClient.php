@@ -102,11 +102,13 @@ abstract class AbstractClient
             $this->fromUrl = $url;
             $this->uri = $patch;
 
-            $prefix = current(explode('/', $patch));
-            if (in_array($prefix, config('sak.global_jwt.service', []))) {
-                $this->setAppKey($this->signGlobal());
-            }
-            $this->options = $this->processOptions($options);
+//            $prefix = current(explode('/', $patch));
+//            if (in_array($prefix, config('sak.global_jwt.service', []))) {
+//                $this->setAppKey($this->signGlobal());
+//            }
+
+            //$this->options = $this->processOptions($options);
+            $this->options = $options;
 
             config(['originating_service' => $resource_name]);
 

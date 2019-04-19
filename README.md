@@ -6,3 +6,12 @@
 - PHP 7.1+
 - MySQL 5.7+
 - Redis 3.0+
+
+## 同步到本地Composer仓库
+（http://packages.sak.org/）
+- 登录136 内部服务器
+- 执行命令
+```
+cd /var/www/satis
+php bin/satis build config.json web/
+```

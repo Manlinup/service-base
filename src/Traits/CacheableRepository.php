@@ -89,8 +89,8 @@ trait CacheableRepository
         if (!$cacheEnabled) {
             return false;
         }
-        $cacheOnly   = isset($this->cacheOnly) ? $this->cacheOnly : config('inno.cache.allowed.only', null);
-        $cacheExcept = isset($this->cacheExcept) ? $this->cacheExcept : config('inno.cache.allowed.except', null);
+        $cacheOnly   = isset($this->cacheOnly) ? $this->cacheOnly : config('sak.cache.allowed.only', null);
+        $cacheExcept = isset($this->cacheExcept) ? $this->cacheExcept : config('sak.cache.allowed.except', null);
 
         if (is_array($cacheOnly)) {
             return in_array($method, $cacheOnly);
@@ -181,7 +181,7 @@ trait CacheableRepository
      */
     public function getCacheMinutes()
     {
-        $cacheMinutes = isset($this->cacheMinutes) ? $this->cacheMinutes : config('inno.cache.minutes', 30);
+        $cacheMinutes = isset($this->cacheMinutes) ? $this->cacheMinutes : config('sak.cache.minutes', 30);
 
         return $cacheMinutes;
     }

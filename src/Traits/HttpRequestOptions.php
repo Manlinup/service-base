@@ -59,7 +59,7 @@ trait HttpRequestOptions
     {
         if (empty($this->accept)) {
             $standTree    = config('api.standardsTree', 'vnd');
-            $subtype      = config('api.subtype', 'patsnap');
+            $subtype      = config('api.subtype', 'sak');
             $version      = config('api.version', 'v1');
             $this->accept = 'application/' . $standTree . '.' . $subtype . '.' . $version . '+json';
         }
@@ -173,6 +173,7 @@ trait HttpRequestOptions
     }
 
     /**
+     * @TODO  后期打开 Authorization
      * 处理微服务之间通过kong调用需要的header头信息
      * @param array $options
      * @return array
@@ -180,12 +181,11 @@ trait HttpRequestOptions
     public function processOptions(array $options)
     {
         $headers = [
-            config('api.jwtHeaderKey', 'Authorization')              => $this->getAuthorization(),
+            //config('api.jwtHeaderKey', 'Authorization')              => $this->getAuthorization(),
             config('api.apiHeaderKey', 'accept')                     => $this->getAccept(),
             config('api.headerRequestIdKey', 'X-Request-ID')         => $this->getRequestId(),
             config('api.headerUserIdKey', 'X-Consumer-User-ID')      => $this->getUserId(),
             config('api.headerAppKey', 'X-App-Key')                  => $this->getAppKey(),
-            config('api.headerCorrelationIDKey', 'X-Correlation-ID') => $this->getRequestId(),
         ];
         $options['headers'] = array_merge($headers, isset($options['headers']) ? $options['headers'] : []);
 
