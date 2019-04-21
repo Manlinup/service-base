@@ -12,6 +12,8 @@
 - 登录136 内部服务器
 - 执行命令
 ```
-cd /var/www/satis
+cd /var/www/laradock
+docker-compose exec workspace bash
+cd satis
 php bin/satis build config.json web/
 ```
