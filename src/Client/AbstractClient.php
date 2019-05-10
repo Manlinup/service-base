@@ -96,8 +96,8 @@ abstract class AbstractClient
         try {
             $url = $this->getUri($patch);
 
-            $options[CURLOPT_HTTP200ALIASES] = [400];
-            $options['version'] = '1.0';
+            //$options[CURLOPT_HTTP200ALIASES] = [400];
+            //$options['version'] = '1.0';
 
             $this->fromUrl = $url;
             $this->uri = $patch;

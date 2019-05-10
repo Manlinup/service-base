@@ -15,5 +15,5 @@
 cd /var/www/laradock
 docker-compose exec workspace bash
 cd satis
-php bin/satis build config.json web/
+php bin/satis build config.json web
 ```
