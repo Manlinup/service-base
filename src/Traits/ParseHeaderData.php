@@ -9,6 +9,8 @@ namespace Sak\Core\Traits;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Trait ParseHeaderData
@@ -53,6 +55,9 @@ trait ParseHeaderData
      */
     public $api_token;
 
+    protected $user;
+
+    protected $userRoles;
 
     public function bootParseHeaderData()
     {
@@ -62,6 +67,8 @@ trait ParseHeaderData
         $this->api_token       = Request::header(config('api.headerApiTokenKey', 'X-API-Token'));
         $this->organization_id = Request::header(config('api.headerOrganizationIDKey', 'X-Consumer-Organization-ID'));
         $this->profile_id      = Request::header(config('api.headerProfileIDKey', 'X-Consumer-Profile-ID'));
+
+        Request::instance()->request->add(['token' => $this->jwt]);
         $this->setHeaderConfig();
     }
 
@@ -114,12 +121,11 @@ trait ParseHeaderData
             if (!empty($user_id)) {
                 $this->user_id = $user_id;
             } else {
-                $this->user_id = $this->user_id ?: $this->parseBaseJwt()->get(1)->extra->tenant_id;
+                $this->user_id = $this->user_id ?: $this->getUserByJwt()->id;
             }
             config(['user_id' => $this->user_id]);
         } catch (\Exception $e) {
-            //如果没有可能是从shell过来了，设置为1
-            config(['user_id' => 1]);
+            config(['user_id' => null]);
         }
     }
 
@@ -133,7 +139,7 @@ trait ParseHeaderData
             if (!empty($organization_id)) {
                 $this->organization_id = $organization_id;
             } else {
-                $this->organization_id = $this->organization_id ?: $this->parseBaseJwt()->get(1)->extra->organization_id;
+                $this->organization_id = $this->organization_id ?: $this->getUserByJwt()->organization_id;
             }
             config(['organization_id' => $this->organization_id]);
         } catch (\Exception $e) {
@@ -152,7 +158,7 @@ trait ParseHeaderData
             if (!empty($profile_id)) {
                 $this->profile_id = $profile_id;
             } else {
-                $this->profile_id = $this->profile_id ?: $this->parseBaseJwt()->get(1)->extra->profile_id;
+                $this->profile_id = $this->profile_id ?: $this->getUserRolesByJwt();
             }
             config(['profile_id' => $this->profile_id]);
         } catch (\Exception $e) {
@@ -173,8 +179,45 @@ trait ParseHeaderData
                 return ($key == 1) ? json_decode(base64_decode($value)) : $value;
             });
         } catch (\Exception $e) {
-            Log::error("The tenant id is null, jwt token is invalid.");
+            Log::error("jwt token is invalid.");
             return false;
         }
+    }
+
+    /**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\Guard
+     */
+    protected function guard()
+    {
+        return Auth::guard();
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     */
+    private function getUserByJwt()
+    {
+        if ($this->user) {
+            return $this->user;
+        }
+
+        return Cache::tags('authorization_user')->get($this->jwt, function () {
+            return $this->guard()->user();
+        });
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getUserRolesByJwt()
+    {
+
+        if ($this->userRoles) {
+            return $this->userRoles;
+        }
+
+        return Cache::tags('authorization_user_roles')->get($this->jwt, []);
     }
 }
