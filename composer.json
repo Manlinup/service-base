@@ -20,7 +20,8 @@
         "guzzlehttp/guzzle": "^6.2",
         "darkaonline/l5-swagger": "5.5.*",
         "zircote/swagger-php": "2.*",
-        "barryvdh/laravel-cors": "^0.11.2"
+        "barryvdh/laravel-cors": "^0.11.2",
+        "lorisleiva/laravel-search-string": "^0.1.3"
     },
     "require-dev": {
         "phpunit/phpunit": "~6.0"
