@@ -122,6 +122,9 @@ trait ParseHeaderData
                 $this->user_id = $user_id;
             } else {
                 $this->user_id = $this->user_id ?: $this->getUserByJwt()->id;
+                Cache::remember('user'.$this->jwt, 300, function () {
+                    return $this->getUserByJwt();
+                });
             }
             config(['user_id' => $this->user_id]);
         } catch (\Exception $e) {
