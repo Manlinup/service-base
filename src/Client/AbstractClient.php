@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Log;
+use Psr\Http\Message\MessageInterface;
 use Sak\Core\Exceptions\BadRequestException;
 use Sak\Core\Exceptions\NotFoundException;
 use Sak\Core\Exceptions\ServerErrorException;
@@ -57,6 +58,12 @@ abstract class AbstractClient
      * @var string
      */
     protected $uri = '';
+
+    /**
+     * 响应体
+     * @var MessageInterface
+     */
+    protected $response;
 
     /**
      * 记录日志中的分隔符，用于方便定位
@@ -113,6 +120,9 @@ abstract class AbstractClient
             config(['originating_service' => $resource_name]);
 
             $response = $this->_client->request($method, $url, $this->options);
+
+            $this->response = $response;
+
             $result = $response->getBody()->getContents();
 
             return $result;
@@ -128,6 +138,16 @@ abstract class AbstractClient
             Log::error($e->getMessage());
             throw new ServerErrorException("An unknown error has occurred.");
         }
+    }
+
+    /**
+     * 返回响应头。
+     * 先要请求request接口
+     * @return \string[][]
+     */
+    public function getResponseHeaders()
+    {
+        return $this->response->getHeaders();
     }
 
     /**
