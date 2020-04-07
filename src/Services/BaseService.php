@@ -249,4 +249,25 @@ abstract class BaseService
             }
         }
     }
+
+    /**
+     * 根据条件查询值
+     * @param array $foreignKey
+     * @param $mapKey
+     * @param $mapValue
+     * @return array
+     */
+    public function getByForeignKey(array $foreignKey, $mapKey, $mapValue): array
+    {
+        if (empty($foreignKey)) {
+            return [];
+        }
+        $keys  = array_flip(array_flip(array_filter($foreignKey)));
+        $model = $this->repository->getModel();
+
+        return $model->whereIn($mapKey, $keys)
+            ->get([$mapKey, $mapValue])
+            ->keyBy($mapKey)
+            ->toArray();
+    }
 }
