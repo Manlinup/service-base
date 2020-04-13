@@ -265,8 +265,14 @@ abstract class BaseService
         $keys  = array_flip(array_flip(array_filter($foreignKey)));
         $model = $this->repository->getModel();
 
+        if (is_array($mapValue)) {
+            $map = array_merge($mapValue, [$mapKey]);
+        } else {
+            $map = [$mapKey, $mapValue];
+        }
+
         return $model->whereIn($mapKey, $keys)
-            ->get([$mapKey, $mapValue])
+            ->get($map)
             ->keyBy($mapKey)
             ->toArray();
     }
