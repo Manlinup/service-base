@@ -19,13 +19,11 @@ class $CLASS$Transformer extends BaseTransformer
      * @return array
      */
     /*
-    public function transform(Model $model)
+    public function transform($model)
     {
-        return [
-            'id'         => (int) $model->id,
-            'created_at' => $model->created_at,
-            'updated_at' => $model->updated_at
-        ];
+        $data = $model->toArray();
+
+        return $data;
     }
     */
 }

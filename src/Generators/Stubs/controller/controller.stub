@@ -3,8 +3,8 @@
 $NAMESPACE$
 
 use $BASE_CONTROLLER$;
-use $APPNAME$Http\Requests\$CONTROLLER_CLASS$\Create$CLASS$Request;
-use $APPNAME$Http\Requests\$CONTROLLER_CLASS$\Update$CLASS$Request;
+use $APPNAME$Http\Requests\$PLURAL_CLASS$\Create$CLASS$Request;
+use $APPNAME$Http\Requests\$PLURAL_CLASS$\Update$CLASS$Request;
 use $APPNAME$$CLASS_SERVICE$\$CLASS$Service;
 use Dingo\Api\Http\Request;
 

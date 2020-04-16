@@ -71,7 +71,8 @@ class ControllerGenerator extends BaseGenerator
         return array_merge(parent::getReplacements(), [
             'controller_class' => $this->getControllerName(),
             'base_controller'  => parent::getRootNamespace() . str_replace('/', '\\', $baseController),
-            'class_service'    => str_replace('/', '\\', config('sak.generator.paths.services', 'Services'))
+            'class_service'    => str_replace('/', '\\', config('sak.generator.paths.services', 'Services')),
+            'plural_class'     => $this->getPluralClass(),
         ]);
     }
 
@@ -81,5 +82,10 @@ class ControllerGenerator extends BaseGenerator
     public function getControllerName()
     {
         return str_plural($this->getName());
+    }
+
+    public function getPluralClass ()
+    {
+        return str_plural($this->getClass());
     }
 }

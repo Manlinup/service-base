@@ -37,6 +37,7 @@ trait Generate
 
         //生成repository的统一接口，只生成一次
         $repoName           = config('sak.generator.paths.base_repository_interface', 'Repositories/Contracts') . '/RepositoryInterface.php';
+
         $repoInterGenerator = new RepositoryInterfaceGenerator([
             'name' => 'Repository',
         ]);
@@ -53,6 +54,7 @@ trait Generate
             'name'  => $module,
             'force' => $this->option('force'),
         ]);
+
         $this->generators->push($repositoryGenerator);
 
         //生成service 的统一接口，只生成一次

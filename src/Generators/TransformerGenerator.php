@@ -43,7 +43,7 @@ class TransformerGenerator extends BaseGenerator
      */
     public function getPath()
     {
-        return $this->getBasePath() . '/' . parent::getConfigGeneratorClassPath($this->getPathConfigNode(), true) . '/' . $this->getName() . 'Transformer.php';
+        return $this->getBasePath() . '/' . parent::getConfigGeneratorClassPath($this->getPathConfigNode(), true) . '/' . $this->getTransformerName() . 'Transformer.php';
     }
 
     /**
@@ -73,7 +73,16 @@ class TransformerGenerator extends BaseGenerator
         ], '\\', $model);
 
         return array_merge(parent::getReplacements(), [
+            'class' => $this->getTransformerName(),
             'model' => $model
         ]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getTransformerName()
+    {
+        return str_plural($this->getName());
     }
 }

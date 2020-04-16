@@ -2,7 +2,6 @@
 
 $NAMESPACE$
 
-use Prettus\Repository\Contracts\CriteriaInterface;
 use Prettus\Repository\Contracts\RepositoryInterface;
 use Sak\Core\Criteria\BaseCriteria;
 
