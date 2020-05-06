@@ -564,7 +564,7 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
     }
 
     /**
-     * 批量更新
+     * 通过条件进行更新(可走观察者模式)
      * @param array $where
      * @param array $attributes
      * @return mixed
@@ -573,7 +573,13 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
     {
         $this->applyScope();
 
-        $model = $this->model->where($where)->update($attributes);
+        if (!is_null($model = $this->model->where($where)->first())) {
+            $model->fill($attributes);
+            $model->save();
+        }
+
+        event(new UpdateRepositoryCache($this, $model));
+
         $this->resetModel();
 
         return $this->parserResult($model);
