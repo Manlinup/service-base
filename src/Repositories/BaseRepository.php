@@ -568,6 +568,7 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
      * @param array $where
      * @param array $attributes
      * @return mixed
+     * @throws \Exception
      */
     public function updateWhere(array $where, array $attributes)
     {
@@ -576,13 +577,14 @@ abstract class BaseRepository extends OriginBaseRepository implements CacheableI
         if (!is_null($model = $this->model->where($where)->first())) {
             $model->fill($attributes);
             $model->save();
+            event(new UpdateRepositoryCache($this, $model));
+
+            $this->resetModel();
+
+            return $this->parserResult($model);
         }
 
-        event(new UpdateRepositoryCache($this, $model));
-
-        $this->resetModel();
-
-        return $this->parserResult($model);
+        throw new \Exception();
     }
 
     /**
